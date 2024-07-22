@@ -114,12 +114,10 @@ add_custom_command(
 
 set(
   TOKENIZER_CPP_SRCS
-  src/sentencepiece_tokenizer.cc
   src/huggingface_tokenizer.cc
   src/rwkv_world_tokenizer.cc
 )
 add_library(tokenizer_cpp_objs OBJECT ${TOKENIZER_CPP_SRCS})
-target_include_directories(tokenizer_cpp_objs PRIVATE sentencepiece/src)
 target_include_directories(tokenizer_cpp_objs PRIVATE msgpack/include)
 target_include_directories(tokenizer_cpp_objs PUBLIC ${TOKENIZERS_CPP_INCLUDE})
 if (MLC_ENABLE_SENTENCEPIECE_TOKENIZER STREQUAL "ON")
@@ -139,11 +137,9 @@ if (CMAKE_SYSTEM_NAME STREQUAL "iOS")
           XCODE_ATTRIBUTE_${XCODE_PROPERTY} ${XCODE_VALUE})
   endmacro (set_xcode_property)
 endif()
-add_subdirectory(sentencepiece sentencepiece EXCLUDE_FROM_ALL)
 
 add_library(tokenizers_c INTERFACE ${TOKENIZERS_RUST_LIB})
 target_link_libraries(tokenizers_c INTERFACE ${TOKENIZERS_RUST_LIB} ${TOKENIZERS_C_LINK_LIBS})
 
 add_library(tokenizers_cpp STATIC $<TARGET_OBJECTS:tokenizer_cpp_objs>)
-target_link_libraries(tokenizers_cpp PRIVATE tokenizers_c sentencepiece-static ${TOKENIZERS_CPP_LINK_LIBS})
 target_include_directories(tokenizers_cpp PUBLIC ${TOKENIZERS_CPP_INCLUDE})

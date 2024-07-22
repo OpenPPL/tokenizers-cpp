@@ -22,6 +22,4 @@ add_executable(example example.cc)
 
 target_include_directories(example PRIVATE ${TOKENZIER_CPP_PATH}/include)
 
-# You can link tokenizers_cpp, it will automatically link tokenizers_c
-# and sentencepiece libary
-target_link_libraries(example PRIVATE tokenizers_cpp)
+target_link_libraries(example PRIVATE tokenizers_c tokenizers_cpp -pthread)

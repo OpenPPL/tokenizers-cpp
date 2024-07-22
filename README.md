@@ -1,5 +1,7 @@
 # tokenizers-cpp
 
+**PPL team decouple sentencepiece tokenizer, so it do not support sentencepiece tokenizer !!!**
+
 This project provides a cross-platform C++ tokenizer binding library that can be universally deployed.
 It wraps and binds the [HuggingFace tokenizers library](https://github.com/huggingface/tokenizers)
 and [sentencepiece](https://github.com/google/sentencepiece) and provides a minimum common interface in C++.
