@@ -27,7 +27,7 @@ class Tokenizer {
    * \param text The input text.
    * \returns The encoded token ids.
    */
-  virtual std::vector<int32_t> Encode(const std::string& text) = 0;
+  virtual void Encode(const char* text, uint32_t len, std::vector<int> *ids) = 0;
 
   /*!
    * \brief Encode a batch of texts into ids.
@@ -36,10 +36,10 @@ class Tokenizer {
    */
   virtual std::vector<std::vector<int32_t>> EncodeBatch(const std::vector<std::string>& texts) {
     // Fall back when the derived class does not implement this function.
-    std::vector<std::vector<int32_t>> ret;
+    std::vector<std::vector<int32_t>> ret(texts.size());
     ret.reserve(texts.size());
-    for (const auto& text : texts) {
-      ret.push_back(Encode(text));
+    for (int i = 0; i < texts.size(); ++i) {
+        Encode(texts[i].data(), texts[i].size(), &ret[i]);
     }
     return ret;
   }
@@ -49,7 +49,7 @@ class Tokenizer {
    * \param text The token ids.
    * \returns The decoded text.
    */
-  virtual std::string Decode(const std::vector<int32_t>& ids) = 0;
+  virtual void Decode(const int *ids, size_t len, std::string *detokenized) = 0;
 
   /*!
    * \brief Returns the vocabulary size. Special tokens are considered.
