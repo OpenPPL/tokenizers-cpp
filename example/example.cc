@@ -36,8 +36,10 @@ void TestTokenizer(std::unique_ptr<Tokenizer> tok, bool print_vocab = false,
                    bool check_id_back = true) {
   // Check #1. Encode and Decode
   std::string prompt = "What is the  capital of Canada?";
-  std::vector<int> ids = tok->Encode(prompt);
-  std::string decoded_prompt = tok->Decode(ids);
+  std::vector<int> ids;
+  tok->Encode(prompt.data(), prompt.size(), &ids);
+  std::string decoded_prompt;
+  tok->Decode(ids.data(), ids.size(), &decoded_prompt);
   PrintEncodeResult(ids);
   std::cout << "decode=\"" << decoded_prompt << "\"" << std::endl;
   assert(decoded_prompt == prompt);
@@ -81,25 +83,7 @@ void HuggingFaceTokenizerExample() {
   TestTokenizer(std::move(tok), false, true);
 }
 
-// RWKV world tokenizer
-// - dist/tokenizer_model
-void RWKVWorldTokenizerExample() {
-  std::cout << "Tokenizer: RWKVWorld" << std::endl;
-
-  auto start = std::chrono::high_resolution_clock::now();
-
-  auto tok = Tokenizer::FromBlobRWKVWorld("dist/tokenizer_model");
-
-  auto end = std::chrono::high_resolution_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-
-  std::cout << "Load time: " << duration << " ms" << std::endl;
-
-  // We cannot check id back for RWKVWorldTokenizer yet.
-  TestTokenizer(std::move(tok), false, false);
-}
 
 int main(int argc, char* argv[]) {
   HuggingFaceTokenizerExample();
-  RWKVWorldTokenizerExample();
 }

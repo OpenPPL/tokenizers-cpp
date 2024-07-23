@@ -27,17 +27,16 @@ class HFTokenizer : public Tokenizer {
   }
 
   // use i32 to be consistent with sentencepiece
-  std::vector<int32_t> Encode(const std::string& text, bool add_special_tokens) {
+  void Encode(const char* text, uint32_t len, std::vector<int> *ids, bool add_special_tokens) {
     TokenizerEncodeResult result;
-    tokenizers_encode(handle_, text.data(), text.length(), static_cast<int>(add_special_tokens),
+    tokenizers_encode(handle_, text, len, static_cast<int>(add_special_tokens),
                       &result);
-    std::vector<int32_t> ret(result.token_ids, result.token_ids + result.len);
+    *ids = std::vector<int>(result.token_ids, result.token_ids + result.len);
     tokenizers_free_encode_results(&result, 1);
-    return ret;
   }
 
   // use i32 to be consistent with sentencepiece
-  std::vector<int32_t> Encode(const std::string& text) final { return Encode(text, false); }
+  void Encode(const char* text, uint32_t len, std::vector<int> *ids) final { Encode(text, len, ids, false); }
 
   std::vector<std::vector<int32_t>> EncodeBatch(const std::vector<std::string>& texts,
                                                 bool add_special_tokens) {
@@ -68,16 +67,16 @@ class HFTokenizer : public Tokenizer {
   }
 
   // use i32 to be consistent with sentencepiece
-  std::string Decode(const std::vector<int32_t>& ids, bool skip_special_tokens) {
-    tokenizers_decode(handle_, reinterpret_cast<const uint32_t*>(ids.data()), ids.size(),
+  void Decode(const int *ids, size_t len, std::string *detokenized, bool skip_special_tokens) {
+    tokenizers_decode(handle_, reinterpret_cast<const uint32_t*>(ids), len,
                       static_cast<int>(skip_special_tokens));
-    const char* data;
-    size_t len;
-    tokenizers_get_decode_str(handle_, &data, &len);
-    return std::string(data, len);
+    const char* str_data;
+    size_t str_len;
+    tokenizers_get_decode_str(handle_, &str_data, &str_len);
+    *detokenized = std::string(str_data, str_len);
   }
 
-  std::string Decode(const std::vector<int32_t>& ids) final { return Decode(ids, false); }
+  void Decode(const int *ids, size_t len, std::string *detokenized) final { Decode(ids, len, detokenized, false); }
 
   size_t GetVocabSize() final {
     size_t size;
