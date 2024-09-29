@@ -133,11 +133,8 @@ target_link_libraries(tokenizers_c INTERFACE ${TOKENIZERS_RUST_LIB} ${TOKENIZERS
 add_library(tokenizers_cpp STATIC $<TARGET_OBJECTS:tokenizer_cpp_objs>)
 target_include_directories(tokenizers_cpp PUBLIC ${TOKENIZERS_CPP_INCLUDE})
 
-
-# Install tokenizers_c
-install(TARGETS tokenizers_c
-    EXPORT tokenizers_c_targets
-)
+# 定义 install 规则
+install(FILES ${TOKENIZERS_RUST_LIB} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 # Install tokenizers_cpp
 install(TARGETS tokenizers_cpp
